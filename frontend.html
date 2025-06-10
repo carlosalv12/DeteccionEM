@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Detección de Enfermedades</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
+    textarea { width: 100%; }
+    pre { background:#f4f4f4; padding:1em; }
+  </style>
+</head>
+<body>
+  <h1>Detección de Enfermedades Mentales</h1>
+  <textarea id="txt" rows="4" placeholder="Escribe tu texto aquí..."></textarea><br><br>
+  <button id="btn">Enviar</button>
+  <h2>Resultado</h2>
+  <pre id="out">Aquí aparecerá la predicción</pre>
+
+  <script>
+    const API_URL = 'http://127.0.0.1:8000/predict';
+
+    document.getElementById('btn').addEventListener('click', async () => {
+      const text = document.getElementById('txt').value.trim();
+      if (!text) {
+        alert('El texto no puede estar vacío');
+        return;
+      }
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ text })
+        });
+        if (!res.ok) throw await res.json();
+        const { label, scores } = await res.json();
+        document.getElementById('out').textContent =
+          `Etiqueta: ${label}\n\nScores:\n` +
+          Object.entries(scores)
+                .map(([k,v]) => `${k}: ${ (v*100).toFixed(1) }%`)
+                .join('\n');
+      } catch (err) {
+        document.getElementById('out').textContent = 
+          `Error ${err.status || ''}: ${err.detail || err.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
