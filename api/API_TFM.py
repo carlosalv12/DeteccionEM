@@ -4,6 +4,7 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import torch
 from fastapi.middleware.cors import CORSMiddleware
 import os
+from huggingface_hub import InferenceApi
 
 class TextRequest(BaseModel):
     text: str
@@ -26,27 +27,17 @@ app.add_middleware(
   allow_headers=["*"],
 )
 
-HF_MODEL = "carlosalv12/deteccionem-model"
-
-tokenizer = AutoTokenizer.from_pretrained(HF_MODEL)
-model     = AutoModelForSequenceClassification.from_pretrained(
-               HF_MODEL,
-               low_cpu_mem_usage=True
-            )
-model.eval()
+inference = InferenceApi(
+   repo_id="carlosalv12/deteccionem-model",
+   token=os.environ["HF_AUTH_TOKEN"]
+)
 
 def predict_labels(text: str):
-    # Tokenización y creación de tensores
-    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
-    with torch.no_grad():
-        logs = model(**inputs).logits
-    # Probabilidades softmax
-    probs = torch.softmax(logs, dim=-1).squeeze().tolist()
-    # Mapear ids a etiquetas
-    id2label = model.config.id2label
-    scores = {id2label[i]: probs[i] for i in range(len(probs))}
-    # Seleccionar etiqueta con mayor probabilidad
-    label = max(scores, key=scores.get)
+    # Llamada al endpoint de inferencia de Hugging Face
+    out = inference({"inputs": text})
+    # El formato puede variar según pipeline; aquí asumimos dict con 'label' y 'scores'
+    label = out.get("label") or out[0]["label"]
+    scores = out.get("scores") or {item["label"]: item["score"] for item in out}
     return label, scores
 
 @app.post("/predict", response_model=PredictionResponse)
