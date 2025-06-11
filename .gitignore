@@ -8,4 +8,4 @@
 # Ignorar bytecode y entornos
 __pycache__/
 *.pyc
-.venv/
+.venv/api/model/ 
