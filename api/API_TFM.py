@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import torch
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 class TextRequest(BaseModel):
     text: str
@@ -26,9 +27,11 @@ app.add_middleware(
 )
 
 
-MODEL_NAME = r"C:\Users\carlo\OneDrive\Escritorio\Master\TFM\results\checkpoint-240"
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+BASE = os.path.dirname(__file__)
+MODEL_DIR = os.path.join(BASE, "model")
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, local_files_only=True)
+model     = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR, local_files_only=True)
 model.eval()
 
 def predict_labels(text: str):
