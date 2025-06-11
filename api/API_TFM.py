@@ -26,12 +26,10 @@ app.add_middleware(
   allow_headers=["*"],
 )
 
+HF_MODEL = "carlosalv12/deteccionem-model"
 
-BASE = os.path.dirname(__file__)
-MODEL_DIR = os.path.join(BASE, "model")
-
-tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, local_files_only=True)
-model     = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR, local_files_only=True)
+tokenizer = AutoTokenizer.from_pretrained(HF_MODEL)
+model     = AutoModelForSequenceClassification.from_pretrained(HF_MODEL)
 model.eval()
 
 def predict_labels(text: str):
