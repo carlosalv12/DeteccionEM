@@ -29,11 +29,10 @@ app.add_middleware(
 HF_MODEL = "carlosalv12/deteccionem-model"
 
 tokenizer = AutoTokenizer.from_pretrained(HF_MODEL)
-model = AutoModelForSequenceClassification.from_pretrained(
-    HF_MODEL,
-    load_in_8bit=True,
-    device_map="auto"
-)
+model     = AutoModelForSequenceClassification.from_pretrained(
+               HF_MODEL,
+               low_cpu_mem_usage=True
+            )
 model.eval()
 
 def predict_labels(text: str):
