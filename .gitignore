@@ -1,0 +1,11 @@
+# Ignorar checkpoints y resultados
+/results/
+
+# Ignorar archivos de Jupyter
+*.ipynb
+*.ipynb_checkpoints/
+
+# Ignorar bytecode y entornos
+__pycache__/
+*.pyc
+.venv/
