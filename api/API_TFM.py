@@ -35,11 +35,14 @@ inference = InferenceApi(
 
 def predict_labels(text: str):
     # Llamada al endpoint de inferencia de Hugging Face
-    out = inference({"inputs": text})
-    # El formato puede variar según pipeline; aquí asumimos dict con 'label' y 'scores'
-    label = out.get("label") or out[0]["label"]
-    scores = out.get("scores") or {item["label"]: item["score"] for item in out}
-    return label, scores
+    resp = inference({"inputs": text}, raw_response=True)
+    out = resp.json()
+    # El formato puede variar según pipeline; aquí asumimos lista de dicts o dict con 'label' y 'scores'
+    if isinstance(out, list):
+        top = out[0]
+        return top["label"], {top["label"]: top["score"]}
+    # Si devuelve dict con 'label' y 'scores'
+    return out["label"], out.get("scores", {})
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(request: TextRequest):
