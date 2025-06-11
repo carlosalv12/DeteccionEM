@@ -29,6 +29,7 @@ app.add_middleware(
 
 inference = InferenceApi(
    repo_id="carlosalv12/deteccionem-model",
+   task = "text-classification",
    token=os.environ["HF_AUTH_TOKEN"]
 )
 
