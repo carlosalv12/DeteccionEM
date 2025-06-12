@@ -25,7 +25,7 @@ app.add_middleware(
 )
 
 HF_TOKEN = os.environ["HF_AUTH_TOKEN"]       # Pon tu token aquí en Render
-HF_API = "https://api-inference.huggingface.co/pipeline/text-classification/carlosalv12/deteccionem-model"
+HF_API = "https://api-inference.huggingface.co/models/carlosalv12/deteccionem-model"
 
 def predict_labels(text: str):
     headers = {
